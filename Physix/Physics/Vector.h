@@ -37,6 +37,43 @@ public:
 		this->y -= other.y;
 		return *this;
 	}
+	
+	Vector2 & operator *=(Number factor)
+	{
+		this->x *= factor;
+		this->y *= factor;
+		return *this;
+	}
+	
+	/*Vector2 & operator *=(NumberU factor)
+	{
+		this->x *= fromUnsigned(factor);
+		this->y *= fromUnsigned(factor);
+		return *this;
+	}*/
+	
+	Vector2 & operator /=(Number factor)
+	{
+		const auto inverseFactor = (1 / factor);
+		this->x *= inverseFactor;
+		this->y *= inverseFactor;
+		return *this;
+	}
+	
+	/*Vector2 & operator /=(NumberU factor)
+	{
+		const auto inverseFactor = fromUnsigned(1 / factor);
+		this->x *= inverseFactor;
+		this->y *= inverseFactor;
+		return *this;
+	}*/
+	
+	Vector2 & operator -(void)
+	{
+		this->x = -this->x;
+		this->y = -this->y;
+		return *this;
+	}
 };
 
 inline constexpr bool operator ==(Vector2 left, Vector2 right)
@@ -68,10 +105,10 @@ inline constexpr Vector2 operator *(Vector2 vector, Number factor)
 }
 
 // Multiplying a vector by a factor scales the vector
-inline constexpr Vector2 operator *(Vector2 vector, NumberU factor)
+/*inline constexpr Vector2 operator *(Vector2 vector, NumberU factor)
 {
 	return Vector2(vector.x * fromUnsigned(factor), vector.y * fromUnsigned(factor));
-}
+}*/
 
 // Dividing a vector by a factor scales the vector
 inline constexpr Vector2 operator /(Vector2 vector, Number factor)
@@ -81,11 +118,11 @@ inline constexpr Vector2 operator /(Vector2 vector, Number factor)
 }
 
 // Dividing a vector by a factor scales the vector
-inline constexpr Vector2 operator /(Vector2 vector, NumberU factor)
+/*inline constexpr Vector2 operator /(Vector2 vector, NumberU factor)
 {
 	// Multiplying by the inverse might be cheaper
 	return vector * fromUnsigned(1 / factor);
-}
+}*/
 
 //
 // Vector & Point interaction

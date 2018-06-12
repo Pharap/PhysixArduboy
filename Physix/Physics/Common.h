@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <FixedPoints.h>
 
-using Number = SFixed<12, 3>;
-using NumberU = UFixed<13, 3>;
+using Number = SFixed<7, 8>;
+using NumberU = UFixed<8, 8>;
 
 constexpr inline NumberU fromSigned(Number value)
 {
