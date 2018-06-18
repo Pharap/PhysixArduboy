@@ -13,10 +13,3 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-
-#include "Common.h"
-#include "Point.h"
-#include "Vector.h"
-#include "RigidBody.h"
-#include "Circle.h"
-#include "Rectangle.h"
