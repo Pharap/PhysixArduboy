@@ -29,7 +29,7 @@ public:
 	static constexpr Number CoefficientOfFriction = 0.95;
 	
 	// Simulates gravity
-	// Earth's gravitational pull is 9.8 m/sb_type
+	// Earth's gravitational pull is 9.8 m/s squared
 	// But that's far too powerful for the tiny screen
 	// So I picked something small
 	static constexpr Number CoefficientOfGravity = 0.5;
