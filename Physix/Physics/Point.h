@@ -17,8 +17,7 @@
 #pragma once
 
 #include "Common.h"
-
-class Vector2;
+#include "Vector2.h"
 
 class Point2
 {
@@ -29,13 +28,24 @@ public:
 	
 public:
 	// Constructors
-	constexpr Point2(void) = default;
+	constexpr Point2() = default;
 	constexpr Point2(int8_t x, int8_t y) : x(x), y(y) {}
 	constexpr Point2(int16_t x, int16_t y) : x(x), y(y) {}
 	constexpr Point2(Number x, Number y) : x(x), y(y) {}
 	
-	Point2 & operator +=(Vector2 other);
-	Point2 & operator -=(Vector2 other);
+	Point2 & operator +=(Vector2 other)
+	{
+		this->x += other.x;
+		this->y += other.y;
+		return *this;
+	}
+	
+	Point2 & operator -=(Vector2 other)
+	{
+		this->x -= other.x;
+		this->y -= other.y;
+		return *this;
+	}
 };
 
 inline constexpr bool operator ==(Point2 left, Point2 right)
