@@ -17,7 +17,7 @@
 #pragma once
 
 #include "Common.h"
-#include "Vector2.h"
+#include "Vector.h"
 
 class Point2
 {
