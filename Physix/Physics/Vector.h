@@ -139,36 +139,3 @@ inline constexpr Vector2 operator /(Vector2 vector, Number factor)
 	// Multiplying by the inverse might be cheaper
 	return vector * fromUnsigned(1 / factor);
 }*/
-
-//
-// Vector & Point interaction
-//
-
-// Adding a vector to a point offsets the point
-inline constexpr Point2 operator +(Point2 point, Vector2 offset)
-{
-	return Point2(point.x + offset.x, point.y + offset.y);
-}
-
-// Subtracting a vector from a point offsets the point
-inline constexpr Point2 operator -(Point2 point, Vector2 offset)
-{
-	return Point2(point.x - offset.x, point.y - offset.y);
-}
-
-// Subtracting two points gets the vector between them
-inline constexpr Vector2 operator -(Point2 firstPoint, Point2 secondPoint)
-{
-	return Vector2(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
-}
-
-/*// Shorthand to get square distance between two points
-inline constexpr NumberU distanceSquared(Point2 firstPoint, Point2 secondPoint)
-{
-	// Readable Version:
-	// const auto vector = firstPoint - secondPoint;
-	// return vector.getMagnitudeSquared();
-	
-	// Constexpr version:
-	return (firstPoint - secondPoint).getMagnitudeSquared();
-}*/
