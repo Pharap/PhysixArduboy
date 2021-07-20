@@ -122,7 +122,7 @@ public:
 	{
 		arduboy.println(F("Gravity"));
 		arduboy.println(gravityEnabled ? F("ON") : F("OFF"));
-		arduboy.println(gravitationalForce.y < 0 ? F("UP") : F("DOWN"));
+		arduboy.println((gravitationalForce.y < 0) ? F("UP") : F("DOWN"));
 
 		arduboy.print(F("G: "));
 		arduboy.println(static_cast<float>(coefficientOfGravity));
