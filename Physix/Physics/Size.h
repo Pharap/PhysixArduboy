@@ -24,7 +24,7 @@ public:
 	// Fields
 	NumberU width;
 	NumberU height;
-	
+
 public:
 	// Constructors
 	constexpr Size2() = default;

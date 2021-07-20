@@ -34,27 +34,27 @@ public:
 	constexpr Circle(Point2 position, NumberU radius) : position(position), radius(radius) {}
 	constexpr Circle(Number x, Number y) : position(x, y), radius(1) {}
 	constexpr Circle(Number x, Number y, NumberU radius) : position(x, y), radius(radius) {}
-	
+
 	constexpr Number getX() const
 	{
 		return this->position.x;
 	}
-	
+
 	constexpr Number getY() const
 	{
 		return this->position.y;
 	}
-	
+
 	constexpr Size2 getSize() const
 	{
 		return Size2(this->radius, this->radius);
 	}
-	
+
 	constexpr NumberU getWidth() const
 	{
 		return this->radius;
 	}
-	
+
 	constexpr NumberU getHeight() const
 	{
 		return this->radius;
@@ -69,13 +69,13 @@ public:
 	{
 		return (this->radius * this->radius);
 	}
-	
+
 	// Returns true if the point intersects the circle
 	constexpr bool intersects(Point2 point) const
 	{
 		return (distanceSquared(this->position, point) <= this->getRadiusSquared());
 	}
-	
+
 	// Returns true if the point lies within the circle
 	constexpr bool contains(Point2 point) const
 	{

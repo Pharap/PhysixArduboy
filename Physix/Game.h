@@ -22,42 +22,42 @@
 
 class Game
 {
-	
+
 public:
 	// Simulates friction
 	// Not actually how a real coefficient of friction works
 	static constexpr Number coefficientOfFriction = 0.95;
-	
+
 	// Simulates gravity
 	// Earth's gravitational pull is 9.8 m/s squared
 	// But that's far too powerful for the tiny screen
 	// So I picked something small
 	static constexpr Number coefficientOfGravity = 0.5;
-	
+
 	// Simulates bounciness
 	// Again, not quite like the real deal
 	static constexpr Number coefficientOfRestitution = 0.3;
-	
+
 	// Prevents never-ending bounciness
 	static constexpr Number restitutionThreshold = Number::Epsilon * 16;
-	
+
 	// Amount of force the player exerts
 	static constexpr Number inputForce = 0.25;
-	
+
 private:
 	Arduboy2 arduboy = Arduboy2();
-	
+
 	RigidBody objects[8];
-	
+
 	// playerObject always points to objects[0]
 	// The two can be considered interchangeable
 	RigidBody & playerObject = objects[0];
-	
+
 	bool gravityEnabled = false;
 	Vector2 gravitationalForce = Vector2(0, coefficientOfGravity);
 
 	bool statRenderingEnabled = true;
-	
+
 public:
 
 	void randomiseObjects()
@@ -65,8 +65,8 @@ public:
 		for(uint8_t i = 0; i < arrayLength(objects); ++i)
 		{
 			RigidBody & object = objects[i];
-			
-			object.position = Point2(Number(random(arduboy.width())), Number(random(arduboy.height())));			
+
+			object.position = Point2(Number(random(arduboy.width())), Number(random(arduboy.height())));
 			if(gravityEnabled)
 				// If gravity enabled, only affect y
 				object.velocity.y += Number(random(-8, 8), random(1 << Number::FractionSize));
@@ -79,33 +79,33 @@ public:
 	void setup()
 	{
 		arduboy.begin();
-		
+
 		randomiseObjects();
-		
+
 		playerObject.position = Point2(Number(arduboy.width() / 2), Number(arduboy.height() / 2));
 		playerObject.velocity = Vector2(0, 0);
 	}
-	
+
 	void loop()
 	{
 		if(!arduboy.nextFrame())
 			return;
-			
+
 		arduboy.pollButtons();
-		
+
 		updateInput();
 		simulatePhysics();
-		
+
 		arduboy.clear();
-		
+
 		renderObjects();
-		
+
 		if(statRenderingEnabled)
 			renderDisplay();
-		
+
 		arduboy.display();
 	}
-	
+
 	void renderObjects()
 	{
 		for(uint8_t i = 0; i < arrayLength(objects); ++i)
@@ -117,13 +117,13 @@ public:
 				arduboy.drawRect(static_cast<int8_t>(object.getX()), static_cast<int8_t>(object.getY()), 8, 8);
 		}
 	}
-	
+
 	void renderDisplay()
 	{
 		arduboy.println(F("Gravity"));
 		arduboy.println(gravityEnabled ? F("ON") : F("OFF"));
 		arduboy.println(gravitationalForce.y < 0 ? F("UP") : F("DOWN"));
-		
+
 		arduboy.print(F("G: "));
 		arduboy.println(static_cast<float>(coefficientOfGravity));
 		arduboy.print(F("F: "));
@@ -131,10 +131,10 @@ public:
 		arduboy.print(F("R: "));
 		arduboy.println(static_cast<float>(coefficientOfRestitution));
 	}
-	
+
 	void updateInput()
 	{
-		
+
 		// Input tools for playing around
 		if(arduboy.pressed(B_BUTTON))
 		{
@@ -156,34 +156,34 @@ public:
 		}
 		// Input for normal object control
 		else
-		{			
+		{
 			Vector2 playerForce = Vector2(0, 0);
-			
+
 			if(arduboy.pressed(LEFT_BUTTON))
 				playerForce.x += -inputForce;
-			
+
 			if(arduboy.pressed(RIGHT_BUTTON))
 				playerForce.x += inputForce;
-			
+
 			if(arduboy.pressed(UP_BUTTON))
 				playerForce.y += -inputForce;
-			
+
 			if(arduboy.pressed(DOWN_BUTTON))
 				playerForce.y += inputForce;
-							
+
 			// The player's input can be thought of as a force
 			// to be enacted on the object that the player is controlling
 			playerObject.velocity += playerForce;
-			
+
 			// Emergency stop
 			if(arduboy.justPressed(A_BUTTON))
 				playerObject.velocity = Vector2(0, 0);
 		}
 	}
-	
+
 	void simulatePhysics()
 	{
-					
+
 		// Update objects
 		for(uint8_t i = 0; i < arrayLength(objects); ++i)
 		{
@@ -204,20 +204,20 @@ public:
 
 			// Then, keep the objects onscreen
 			// (A sort of cheaty way of keeping the objects onscreen)
-			
+
 			// They're literally bouncing off the walls :P
 			if(object.position.x < 0)
 			{
 				object.position.x = 0;
-				object.velocity.x = -object.velocity.x;			
+				object.velocity.x = -object.velocity.x;
 			}
 
 			if(object.position.x > arduboy.width() - 8)
 			{
 				object.position.x = (arduboy.width() - 8);
-				object.velocity.x = -object.velocity.x;	
+				object.velocity.x = -object.velocity.x;
 			}
-					
+
 			if(gravityEnabled)
 			{
 				// If gravity is enabled, gradually have the object come to a halt
@@ -225,7 +225,7 @@ public:
 				if(object.position.y < 0)
 				{
 					object.position.y = 0;
-					
+
 					if(object.velocity.y > restitutionThreshold)
 						object.velocity.y = -object.velocity.y * coefficientOfRestitution;
 					else
@@ -234,29 +234,29 @@ public:
 				if(object.position.y > arduboy.height() - 8)
 				{
 					object.position.y = (arduboy.height() - 8);
-					
+
 					if(object.velocity.y > restitutionThreshold)
 						object.velocity.y = -object.velocity.y * coefficientOfRestitution;
 					else
 						object.velocity.y = 0;
 				}
-			}			
+			}
 			else
 			{
 				// If gravity isn't enabled, bounce off the y sides as well
 				if(object.position.y < 0)
 				{
 					object.position.y = 0;
-					object.velocity.y = -object.velocity.y;			
+					object.velocity.y = -object.velocity.y;
 				}
 
 				if(object.position.y > arduboy.height() - 8)
 				{
 					object.position.y = (arduboy.height() - 8);
-					object.velocity.y = -object.velocity.y;	
+					object.velocity.y = -object.velocity.y;
 				}
 			}
-			
+
 			// Finally, update position using velocity
 			object.position += object.velocity;
 		}

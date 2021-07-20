@@ -36,52 +36,52 @@ public:
 	constexpr Rectangle(Number x, Number y) : position(x, y), size(1, 1) {}
 	constexpr Rectangle(Number x, Number y, Size2 size) : position(x, y), size(size) {}
 	constexpr Rectangle(Number x, Number y, uint8_t width, uint8_t height) : position(x, y), size(width, height) {}
-	
+
 	constexpr Number getX() const
 	{
 		return this->position.x;
 	}
-	
+
 	constexpr Number getY() const
 	{
 		return this->position.y;
 	}
-	
+
 	constexpr Size2 getSize() const
 	{
 		return this->size;
 	}
-	
+
 	constexpr NumberU getWidth() const
 	{
 		return this->size.width;
 	}
-	
+
 	constexpr NumberU getHeight() const
 	{
 		return this->size.height;
 	}
-	
+
 	constexpr Number getLeft() const
 	{
 		return this->getX();
 	}
-	
+
 	constexpr Number getRight() const
 	{
 		return (this->getX() + fromUnsigned(this->getWidth()));
 	}
-	
+
 	constexpr Number getTop() const
 	{
 		return this->getY();
 	}
-	
+
 	constexpr Number getBottom() const
 	{
 		return (this->getY() + fromUnsigned(this->getHeight()));
 	}
-	
+
 	// Returns true if the point intersects the rectangle
 	constexpr bool intersects(Point2 point) const
 	{
@@ -92,7 +92,7 @@ public:
 			(point.y <= this->getBottom());
 	}
 };
-	
+
 // Returns true if the rectangles intersect each other
 constexpr inline bool intersects(Rectangle first, Rectangle second)
 {

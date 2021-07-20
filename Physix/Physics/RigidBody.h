@@ -33,17 +33,17 @@ public:
 	constexpr RigidBody() = default;
 	constexpr RigidBody(Point2 position) : position(position), velocity(), mass(1.0) {}
 	constexpr RigidBody(Point2 position, Number mass) : position(position), velocity(), mass(mass) {}
-	
+
 	constexpr Number getX() const
 	{
 		return this->position.x;
 	}
-	
+
 	constexpr Number getY() const
 	{
 		return this->position.y;
 	}
-	
+
 	void applyForce(Vector2 force)
 	{
 		this->velocity += (force / mass);
