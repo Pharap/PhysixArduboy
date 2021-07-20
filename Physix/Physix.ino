@@ -18,12 +18,12 @@
 
 Game game;
 
-void setup(void)
+void setup()
 {
 	game.setup();
 }
 
-void loop(void)
+void loop()
 {
 	game.loop();
 }

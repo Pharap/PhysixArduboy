@@ -60,7 +60,7 @@ private:
 	
 public:
 
-	void randomiseObjects(void)
+	void randomiseObjects()
 	{
 		for(uint8_t i = 0; i < arrayLength(objects); ++i)
 		{
@@ -76,7 +76,7 @@ public:
 		}
 	}
 
-	void setup(void)
+	void setup()
 	{
 		arduboy.begin();
 		
@@ -86,7 +86,7 @@ public:
 		playerObject.velocity = Vector2(0, 0);
 	}
 	
-	void loop(void)
+	void loop()
 	{
 		if(!arduboy.nextFrame())
 			return;
@@ -106,7 +106,7 @@ public:
 		arduboy.display();
 	}
 	
-	void renderObjects(void)
+	void renderObjects()
 	{
 		for(uint8_t i = 0; i < arrayLength(objects); ++i)
 		{
@@ -118,7 +118,7 @@ public:
 		}
 	}
 	
-	void renderDisplay(void)
+	void renderDisplay()
 	{
 		arduboy.println(F("Gravity"));
 		arduboy.println(gravityEnabled ? F("ON") : F("OFF"));
@@ -132,7 +132,7 @@ public:
 		arduboy.println(static_cast<float>(CoefficientOfRestitution));
 	}
 	
-	void updateInput(void)
+	void updateInput()
 	{
 		
 		// Input tools for playing around
@@ -181,7 +181,7 @@ public:
 		}
 	}
 	
-	void simulatePhysics(void)
+	void simulatePhysics()
 	{
 					
 		// Update objects

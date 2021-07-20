@@ -29,43 +29,43 @@ public:
 
 public:
 	// Constructors
-	constexpr Circle(void) = default;
+	constexpr Circle() = default;
 	constexpr Circle(Point2 position) : position(position), radius(1) {}
 	constexpr Circle(Point2 position, NumberU radius) : position(position), radius(radius) {}
 	constexpr Circle(Number x, Number y) : position(x, y), radius(1) {}
 	constexpr Circle(Number x, Number y, NumberU radius) : position(x, y), radius(radius) {}
 	
-	constexpr Number getX(void) const
+	constexpr Number getX() const
 	{
 		return this->position.x;
 	}
 	
-	constexpr Number getY(void) const
+	constexpr Number getY() const
 	{
 		return this->position.y;
 	}
 	
-	constexpr Size2 getSize(void) const
+	constexpr Size2 getSize() const
 	{
 		return Size2(this->radius, this->radius);
 	}
 	
-	constexpr NumberU getWidth(void) const
+	constexpr NumberU getWidth() const
 	{
 		return this->radius;
 	}
 	
-	constexpr NumberU getHeight(void) const
+	constexpr NumberU getHeight() const
 	{
 		return this->radius;
 	}
 
-	constexpr NumberU getDiameter(void) const
+	constexpr NumberU getDiameter() const
 	{
 		return (this->radius * 2);
 	}
 
-	constexpr NumberU getRadiusSquared(void) const
+	constexpr NumberU getRadiusSquared() const
 	{
 		return (this->radius * this->radius);
 	}

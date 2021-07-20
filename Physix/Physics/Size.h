@@ -27,7 +27,7 @@ public:
 	
 public:
 	// Constructors
-	constexpr Size2(void) = default;
+	constexpr Size2() = default;
 	constexpr Size2(NumberU width, NumberU height) : width(width), height(height) {}
 };
 

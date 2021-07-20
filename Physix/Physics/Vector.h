@@ -28,14 +28,14 @@ public:
 	
 public:
 	// Constructors
-	constexpr Vector2(void) = default;
+	constexpr Vector2() = default;
 	constexpr Vector2(int8_t x, int8_t y) : x(x), y(y) {}
 	constexpr Vector2(int16_t x, int16_t y) : x(x), y(y) {}
 	constexpr Vector2(Number x, Number y) : x(x), y(y) {}
 	
 	// Can't do a regular get magnitude without using float because
 	// I don't have a fixed point sqrt
-	constexpr NumberU getMagnitudeSquared(void) const
+	constexpr NumberU getMagnitudeSquared() const
 	{
 		return fromSigned((x * x) + (y * y));
 	}
@@ -84,7 +84,7 @@ public:
 		return *this;
 	}*/
 	
-	Vector2 & operator -(void)
+	Vector2 & operator -()
 	{
 		this->x = -this->x;
 		this->y = -this->y;

@@ -29,7 +29,7 @@ public:
 
 public:
 	// Constructors
-	constexpr Rectangle(void) = default;
+	constexpr Rectangle() = default;
 	constexpr Rectangle(Point2 position) : position(position), size(1, 1) {}
 	constexpr Rectangle(Point2 position, Size2 size) : position(position), size(size) {}
 	constexpr Rectangle(Point2 position, uint8_t width, uint8_t height) : position(position), size(width, height) {}
@@ -37,47 +37,47 @@ public:
 	constexpr Rectangle(Number x, Number y, Size2 size) : position(x, y), size(size) {}
 	constexpr Rectangle(Number x, Number y, uint8_t width, uint8_t height) : position(x, y), size(width, height) {}
 	
-	constexpr Number getX(void) const
+	constexpr Number getX() const
 	{
 		return this->position.x;
 	}
 	
-	constexpr Number getY(void) const
+	constexpr Number getY() const
 	{
 		return this->position.y;
 	}
 	
-	constexpr Size2 getSize(void) const
+	constexpr Size2 getSize() const
 	{
 		return this->size;
 	}
 	
-	constexpr NumberU getWidth(void) const
+	constexpr NumberU getWidth() const
 	{
 		return this->size.width;
 	}
 	
-	constexpr NumberU getHeight(void) const
+	constexpr NumberU getHeight() const
 	{
 		return this->size.height;
 	}
 	
-	constexpr Number getLeft(void) const
+	constexpr Number getLeft() const
 	{
 		return this->getX();
 	}
 	
-	constexpr Number getRight(void) const
+	constexpr Number getRight() const
 	{
 		return (this->getX() + fromUnsigned(this->getWidth()));
 	}
 	
-	constexpr Number getTop(void) const
+	constexpr Number getTop() const
 	{
 		return this->getY();
 	}
 	
-	constexpr Number getBottom(void) const
+	constexpr Number getBottom() const
 	{
 		return (this->getY() + fromUnsigned(this->getHeight()));
 	}
