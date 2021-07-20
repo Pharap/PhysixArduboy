@@ -29,9 +29,24 @@ public:
 public:
 	// Constructors
 	constexpr Point2() = default;
-	constexpr Point2(int8_t x, int8_t y) : x(x), y(y) {}
-	constexpr Point2(int16_t x, int16_t y) : x(x), y(y) {}
-	constexpr Point2(Number x, Number y) : x(x), y(y) {}
+
+	constexpr Point2(int8_t x, int8_t y) :
+		x { x },
+		y { y }
+	{
+	}
+
+	constexpr Point2(int16_t x, int16_t y) :
+		x { x },
+		y { y }
+	{
+	}
+
+	constexpr Point2(Number x, Number y) :
+		x { x },
+		y { y }
+	{
+	}
 
 	Point2 & operator +=(Vector2 other)
 	{

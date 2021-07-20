@@ -30,12 +30,42 @@ public:
 public:
 	// Constructors
 	constexpr Rectangle() = default;
-	constexpr Rectangle(Point2 position) : position(position), size(1, 1) {}
-	constexpr Rectangle(Point2 position, Size2 size) : position(position), size(size) {}
-	constexpr Rectangle(Point2 position, uint8_t width, uint8_t height) : position(position), size(width, height) {}
-	constexpr Rectangle(Number x, Number y) : position(x, y), size(1, 1) {}
-	constexpr Rectangle(Number x, Number y, Size2 size) : position(x, y), size(size) {}
-	constexpr Rectangle(Number x, Number y, uint8_t width, uint8_t height) : position(x, y), size(width, height) {}
+
+	constexpr Rectangle(Point2 position) :
+		position { position },
+		size { 1, 1 }
+	{
+	}
+
+	constexpr Rectangle(Point2 position, Size2 size) :
+		position { position },
+		size { size }
+	{
+	}
+
+	constexpr Rectangle(Point2 position, uint8_t width, uint8_t height) :
+		position { position },
+		size { width, height }
+	{
+	}
+
+	constexpr Rectangle(Number x, Number y) :
+		position { x, y },
+		size { 1, 1 }
+	{
+	}
+
+	constexpr Rectangle(Number x, Number y, Size2 size) :
+		position { x, y },
+		size { size }
+	{
+	}
+
+	constexpr Rectangle(Number x, Number y, uint8_t width, uint8_t height) :
+		position { x, y },
+		size { width, height }
+	{
+	}
 
 	constexpr Number getX() const
 	{

@@ -30,10 +30,30 @@ public:
 public:
 	// Constructors
 	constexpr Circle() = default;
-	constexpr Circle(Point2 position) : position(position), radius(1) {}
-	constexpr Circle(Point2 position, NumberU radius) : position(position), radius(radius) {}
-	constexpr Circle(Number x, Number y) : position(x, y), radius(1) {}
-	constexpr Circle(Number x, Number y, NumberU radius) : position(x, y), radius(radius) {}
+
+	constexpr Circle(Point2 position) :
+		position { position },
+		radius { 1 }
+	{
+	}
+
+	constexpr Circle(Point2 position, NumberU radius) :
+		position { position },
+		radius { radius }
+	{
+	}
+
+	constexpr Circle(Number x, Number y) :
+		position { x, y },
+		radius { 1 }
+	{
+	}
+
+	constexpr Circle(Number x, Number y, NumberU radius) :
+		position { x, y },
+		radius { radius }
+	{
+	}
 
 	constexpr Number getX() const
 	{

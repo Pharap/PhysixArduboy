@@ -31,8 +31,20 @@ public:
 public:
 	// Constructors
 	constexpr RigidBody() = default;
-	constexpr RigidBody(Point2 position) : position(position), velocity(), mass(1.0) {}
-	constexpr RigidBody(Point2 position, Number mass) : position(position), velocity(), mass(mass) {}
+
+	constexpr RigidBody(Point2 position) :
+		position { position },
+		velocity {  },
+		mass { 1.0 }
+	{
+	}
+
+	constexpr RigidBody(Point2 position, Number mass) :
+		position { position },
+		velocity {  },
+		mass { mass }
+	{
+	}
 
 	constexpr Number getX() const
 	{
