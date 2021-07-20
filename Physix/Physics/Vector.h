@@ -136,22 +136,9 @@ inline constexpr Vector2 operator *(Vector2 vector, Number factor)
 	return Vector2(vector.x * factor, vector.y * factor);
 }
 
-// Multiplying a vector by a factor scales the vector
-/*inline constexpr Vector2 operator *(Vector2 vector, NumberU factor)
-{
-	return Vector2(vector.x * fromUnsigned(factor), vector.y * fromUnsigned(factor));
-}*/
-
 // Dividing a vector by a factor scales the vector
 inline constexpr Vector2 operator /(Vector2 vector, Number factor)
 {
 	// Multiplying by the inverse might be cheaper
 	return vector * (1 / factor);
 }
-
-// Dividing a vector by a factor scales the vector
-/*inline constexpr Vector2 operator /(Vector2 vector, NumberU factor)
-{
-	// Multiplying by the inverse might be cheaper
-	return vector * fromUnsigned(1 / factor);
-}*/
