@@ -87,19 +87,19 @@ inline constexpr NumberU distanceSquared(Point2 firstPoint, Point2 secondPoint)
 // Adding a vector to a point offsets the point
 inline constexpr Point2 operator +(Point2 point, Vector2 offset)
 {
-        return Point2(point.x + offset.x, point.y + offset.y);
+	return Point2(point.x + offset.x, point.y + offset.y);
 }
 
 // Subtracting a vector from a point offsets the point
 inline constexpr Point2 operator -(Point2 point, Vector2 offset)
 {
-        return Point2(point.x - offset.x, point.y - offset.y);
+	return Point2(point.x - offset.x, point.y - offset.y);
 }
 
 // Subtracting two points gets the vector between them
 inline constexpr Vector2 operator -(Point2 firstPoint, Point2 secondPoint)
 {
-        return Vector2(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
+	return Vector2(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
 }
 
 /*// Shorthand to get square distance between two points
