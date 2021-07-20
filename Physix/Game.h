@@ -26,23 +26,23 @@ class Game
 public:
 	// Simulates friction
 	// Not actually how a real coefficient of friction works
-	static constexpr Number CoefficientOfFriction = 0.95;
+	static constexpr Number coefficientOfFriction = 0.95;
 	
 	// Simulates gravity
 	// Earth's gravitational pull is 9.8 m/s squared
 	// But that's far too powerful for the tiny screen
 	// So I picked something small
-	static constexpr Number CoefficientOfGravity = 0.5;
+	static constexpr Number coefficientOfGravity = 0.5;
 	
 	// Simulates bounciness
 	// Again, not quite like the real deal
-	static constexpr Number CoefficientOfRestitution = 0.3;
+	static constexpr Number coefficientOfRestitution = 0.3;
 	
 	// Prevents never-ending bounciness
-	static constexpr Number RestitutionThreshold = Number::Epsilon * 16;
+	static constexpr Number restitutionThreshold = Number::Epsilon * 16;
 	
 	// Amount of force the player exerts
-	static constexpr Number InputForce = 0.25;
+	static constexpr Number inputForce = 0.25;
 	
 private:
 	Arduboy2 arduboy = Arduboy2();
@@ -54,7 +54,7 @@ private:
 	RigidBody & playerObject = objects[0];
 	
 	bool gravityEnabled = false;
-	Vector2 gravitationalForce = Vector2(0, CoefficientOfGravity);
+	Vector2 gravitationalForce = Vector2(0, coefficientOfGravity);
 
 	bool statRenderingEnabled = true;
 	
@@ -125,11 +125,11 @@ public:
 		arduboy.println(gravitationalForce.y < 0 ? F("UP") : F("DOWN"));
 		
 		arduboy.print(F("G: "));
-		arduboy.println(static_cast<float>(CoefficientOfGravity));
+		arduboy.println(static_cast<float>(coefficientOfGravity));
 		arduboy.print(F("F: "));
-		arduboy.println(static_cast<float>(CoefficientOfFriction));
+		arduboy.println(static_cast<float>(coefficientOfFriction));
 		arduboy.print(F("R: "));
-		arduboy.println(static_cast<float>(CoefficientOfRestitution));
+		arduboy.println(static_cast<float>(coefficientOfRestitution));
 	}
 	
 	void updateInput()
@@ -160,16 +160,16 @@ public:
 			Vector2 playerForce = Vector2(0, 0);
 			
 			if(arduboy.pressed(LEFT_BUTTON))
-				playerForce.x += -InputForce;
+				playerForce.x += -inputForce;
 			
 			if(arduboy.pressed(RIGHT_BUTTON))
-				playerForce.x += InputForce;
+				playerForce.x += inputForce;
 			
 			if(arduboy.pressed(UP_BUTTON))
-				playerForce.y += -InputForce;
+				playerForce.y += -inputForce;
 			
 			if(arduboy.pressed(DOWN_BUTTON))
-				playerForce.y += InputForce;
+				playerForce.y += inputForce;
 							
 			// The player's input can be thought of as a force
 			// to be enacted on the object that the player is controlling
@@ -197,10 +197,10 @@ public:
 			// Then, simulate friction
 			if(gravityEnabled)
 				// If gravity is enabled, just simulate horizontal friction
-				object.velocity.x *= CoefficientOfFriction;
+				object.velocity.x *= coefficientOfFriction;
 			else
 				// If gravity isn't enabled, simulate top-down friction
-				object.velocity *= CoefficientOfFriction;
+				object.velocity *= coefficientOfFriction;
 
 			// Then, keep the objects onscreen
 			// (A sort of cheaty way of keeping the objects onscreen)
@@ -226,8 +226,8 @@ public:
 				{
 					object.position.y = 0;
 					
-					if(object.velocity.y > RestitutionThreshold)
-						object.velocity.y = -object.velocity.y * CoefficientOfRestitution;
+					if(object.velocity.y > restitutionThreshold)
+						object.velocity.y = -object.velocity.y * coefficientOfRestitution;
 					else
 						object.velocity.y = 0;
 				}
@@ -235,8 +235,8 @@ public:
 				{
 					object.position.y = (arduboy.height() - 8);
 					
-					if(object.velocity.y > RestitutionThreshold)
-						object.velocity.y = -object.velocity.y * CoefficientOfRestitution;
+					if(object.velocity.y > restitutionThreshold)
+						object.velocity.y = -object.velocity.y * coefficientOfRestitution;
 					else
 						object.velocity.y = 0;
 				}
