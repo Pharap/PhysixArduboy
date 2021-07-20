@@ -1,18 +1,18 @@
-/*
-   Copyright (C) 2018 Pharap (@Pharap)
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+//
+//  Copyright (C) 2018-2021 Pharap (@Pharap)
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
 
 #pragma once
 
@@ -22,131 +22,188 @@
 
 class Game
 {
-	
+
 public:
-	// Simulates friction
-	// Not actually how a real coefficient of friction works
-	static constexpr Number CoefficientOfFriction = 0.95;
-	
-	// Simulates gravity
-	// Earth's gravitational pull is 9.8 m/s squared
-	// But that's far too powerful for the tiny screen
-	// So I picked something small
-	static constexpr Number CoefficientOfGravity = 0.5;
-	
-	// Simulates bounciness
-	// Again, not quite like the real deal
-	static constexpr Number CoefficientOfRestitution = 0.3;
-	
-	// Prevents never-ending bounciness
-	static constexpr Number RestitutionThreshold = Number::Epsilon * 16;
-	
-	// Amount of force the player exerts
-	static constexpr Number InputForce = 0.25;
-	
+	/// Used for simulating friction.
+	///
+	/// Note: this is not how a real coefficient of friction works.
+	static constexpr Number coefficientOfFriction = 0.95;
+
+	/// Used for simulating gravity.
+	///
+	/// Earth's gravitational pull is (roughly) 9.8 m/s squared,
+	/// but that's far too powerful for the tiny screen,
+	/// so I picked something small.
+	static constexpr Number coefficientOfGravity = 0.5;
+
+	/// Used for simulating bounciness.
+	///
+	/// Note: this is not how a real coefficient of restitution works.
+	static constexpr Number coefficientOfRestitution = 0.3;
+
+	/// A threshold to ensure the bouncing stops at some point.
+	static constexpr Number restitutionThreshold = (Number::Epsilon * 16);
+
+	/// The amount of force the player exerts.
+	static constexpr Number inputForce = 0.25;
+
 private:
-	Arduboy2 arduboy = Arduboy2();
-	
+	/// An instance of the Arduboy2 API.
+	Arduboy2 arduboy;
+
+	/// The objects floating around the screen.
 	RigidBody objects[8];
-	
-	// playerObject always points to objects[0]
-	// The two can be considered interchangeable
+
+	/// A reference to the object that will represent the player.
+	///
+	/// `playerObject` always points to `objects[0]`,
+	/// so the two can be considered interchangeable.
 	RigidBody & playerObject = objects[0];
-	
+
+	/// Indicates whether gravity should be simulated or not.
 	bool gravityEnabled = false;
-	Vector2 gravitationalForce = Vector2(0, CoefficientOfGravity);
 
+	/// A vector representing the force of gravity.
+	Vector2 gravitationalForce { 0, coefficientOfGravity };
+
+	/// Indicates whether diagnostics should be rendered or not.
 	bool statRenderingEnabled = true;
-	
-public:
 
-	void randomiseObjects(void)
+public:
+	/// Performs necessary set up procedures.
+	void setup()
 	{
-		for(uint8_t i = 0; i < arrayLength(objects); ++i)
+		// Initialise the Arduboy.
+		arduboy.begin();
+
+		// Randomise the objects.
+		randomiseObjects();
+
+		// Calculate the point at the centre of the screen.
+		constexpr auto centreScreen = Point2(Number(arduboy.width() / 2), Number(arduboy.height() / 2));
+
+		// Move the player's object to the centre of the screen, with zero velocity.
+		playerObject.position = centreScreen;
+		playerObject.velocity = Vector2(0, 0);
+	}
+
+	/// Loops continually.
+	void loop()
+	{
+		// If it's not time to draw the next frame.
+		if(!arduboy.nextFrame())
+			// Exit the loop.
+			return;
+
+		// Update the Arduboy's button state variables.
+		arduboy.pollButtons();
+
+		// React to player input.
+		updateInput();
+
+		// Simulate physics.
+		simulatePhysics();
+
+		// Clear the screen.
+		arduboy.clear();
+
+		// Draw all objects (to the frame buffer).
+		renderObjects();
+
+		// If the diagnostics should be displayed.
+		if(statRenderingEnabled)
+			// Draw diagnostics.
+			renderDisplay();
+
+		// Update the screen.
+		arduboy.display();
+	}
+
+	/// Randomises the positions and velocities of all objects.
+	void randomiseObjects()
+	{
+		// For each object in objects...
+		for(RigidBody & object : objects)
 		{
-			RigidBody & object = objects[i];
-			
-			object.position = Point2(Number(random(arduboy.width())), Number(random(arduboy.height())));			
+			// Give the obejct a random on screen position.
+			object.position = Point2(Number(random(arduboy.width())), Number(random(arduboy.height())));
+
+			// Calculate a random x value.
+			const auto xInteger = random(-8, 8);
+			const auto xFraction = random(1 << Number::FractionSize);
+			const auto xOffset = Number(xInteger, xFraction);
+
+			// Calculate a random y value.
+			const auto yInteger = random(-8, 8);
+			const auto yFraction = random(1 << Number::FractionSize);
+			const auto yOffset = Number(yInteger, yFraction);
+
+			// If gravity is enabled...
 			if(gravityEnabled)
-				// If gravity enabled, only affect y
-				object.velocity.y += Number(random(-8, 8), random(1 << Number::FractionSize));
+			{
+				// Adjust the object's vertical velocity.
+				object.velocity += Vector2(0, yOffset);
+			}
+			// If gravity not enabled...
 			else
-				// If gravity not enabled, affect both
-				object.velocity += Vector2(Number(random(-8, 8), random(1 << Number::FractionSize)), Number(random(-8, 8), random(1 << Number::FractionSize)));
+			{
+				// Adjust the object's full velocity.
+				object.velocity += Vector2(xOffset, yOffset);
+			}
 		}
 	}
 
-	void setup(void)
+	/// Renders all objects
+	void renderObjects()
 	{
-		arduboy.begin();
-		
-		randomiseObjects();
-		
-		playerObject.position = Point2(Number(arduboy.width() / 2), Number(arduboy.height() / 2));
-		playerObject.velocity = Vector2(0, 0);
-	}
-	
-	void loop(void)
-	{
-		if(!arduboy.nextFrame())
-			return;
-			
-		arduboy.pollButtons();
-		
-		updateInput();
-		simulatePhysics();
-		
-		arduboy.clear();
-		
-		renderObjects();
-		
-		if(statRenderingEnabled)
-			renderDisplay();
-		
-		arduboy.display();
-	}
-	
-	void renderObjects(void)
-	{
-		for(uint8_t i = 0; i < arrayLength(objects); ++i)
+		// Note that this time the index is being used to identify the player object.
+		for(uint8_t index = 0; index < arrayLength(objects); ++index)
 		{
-			RigidBody & object = objects[i];
-			if(i > 0)
+			RigidBody & object = objects[index];
+
+			// If the object isn't the player...
+			if(index > 0)
+				// Draw it as a filled rectangle.
 				arduboy.fillRect(static_cast<int8_t>(object.getX()), static_cast<int8_t>(object.getY()), 8, 8);
+			// If the object is the player...
 			else
+				// Draw it as an empty rectangle.
 				arduboy.drawRect(static_cast<int8_t>(object.getX()), static_cast<int8_t>(object.getY()), 8, 8);
 		}
 	}
-	
-	void renderDisplay(void)
+
+	/// Draws diagnostic information.
+	void renderDisplay()
 	{
+		// Print whether gravity is enabled, and its direction.
 		arduboy.println(F("Gravity"));
 		arduboy.println(gravityEnabled ? F("ON") : F("OFF"));
-		arduboy.println(gravitationalForce.y < 0 ? F("UP") : F("DOWN"));
-		
+		arduboy.println((gravitationalForce.y < 0) ? F("UP") : F("DOWN"));
+
+		// Print the various coefficients.
 		arduboy.print(F("G: "));
-		arduboy.println(static_cast<float>(CoefficientOfGravity));
+		arduboy.println(static_cast<float>(coefficientOfGravity));
 		arduboy.print(F("F: "));
-		arduboy.println(static_cast<float>(CoefficientOfFriction));
+		arduboy.println(static_cast<float>(coefficientOfFriction));
 		arduboy.print(F("R: "));
-		arduboy.println(static_cast<float>(CoefficientOfRestitution));
+		arduboy.println(static_cast<float>(coefficientOfRestitution));
 	}
-	
-	void updateInput(void)
+
+	/// Updates the simulation state in reaction to player input.
+	void updateInput()
 	{
-		
-		// Input tools for playing around
+		// When the B button is held...
 		if(arduboy.pressed(B_BUTTON))
 		{
-			// A - shake up the other objects by applying random force
+			// A - Shake up the other objects by applying random force.
 			if(arduboy.justPressed(A_BUTTON))
 				randomiseObjects();
 
-			// Down - toggle gravity on/off
+			// Down - Toggle gravity on or off.
 			if(arduboy.justPressed(DOWN_BUTTON))
 				gravityEnabled = !gravityEnabled;
 
-			// Up - invert gravity
+			// Up - Invert gravity.
 			if(arduboy.justPressed(UP_BUTTON))
 				gravitationalForce = -gravitationalForce;
 
@@ -154,110 +211,161 @@ public:
 			if(arduboy.justPressed(LEFT_BUTTON))
 				statRenderingEnabled = !statRenderingEnabled;
 		}
-		// Input for normal object control
+		// When the B button isn't held...
 		else
-		{			
+		{
+			// Calculate the force to apply to the 'player' object
+			// based upon which buttons the player is pressing.
 			Vector2 playerForce = Vector2(0, 0);
-			
+
 			if(arduboy.pressed(LEFT_BUTTON))
-				playerForce.x += -InputForce;
-			
+				playerForce.x += -inputForce;
+
 			if(arduboy.pressed(RIGHT_BUTTON))
-				playerForce.x += InputForce;
-			
+				playerForce.x += inputForce;
+
 			if(arduboy.pressed(UP_BUTTON))
-				playerForce.y += -InputForce;
-			
+				playerForce.y += -inputForce;
+
 			if(arduboy.pressed(DOWN_BUTTON))
-				playerForce.y += InputForce;
-							
+				playerForce.y += inputForce;
+
 			// The player's input can be thought of as a force
-			// to be enacted on the object that the player is controlling
+			// to be enacted on the object that the player is controlling.
 			playerObject.velocity += playerForce;
-			
-			// Emergency stop
+
+			// If A is pressed...
 			if(arduboy.justPressed(A_BUTTON))
+				// Perform an 'emergency stop' by zeroing the velocity.
 				playerObject.velocity = Vector2(0, 0);
 		}
 	}
-	
-	void simulatePhysics(void)
-	{
-					
-		// Update objects
-		for(uint8_t i = 0; i < arrayLength(objects); ++i)
-		{
-			// object refers to the given item in the array
-			RigidBody & object = objects[i];
 
-			// First, simulate gravity
+	/// Simulates the physics.
+	void simulatePhysics()
+	{
+		// Precalculate the boundaries for the sides of the screen.
+		constexpr int16_t screenLeft = 0;
+		constexpr int16_t screenRight = (Arduboy2::width() - 8);
+		constexpr int16_t screenTop = 0;
+		constexpr int16_t screenBottom = (Arduboy2::height() - 8);
+
+		// For each object in objects...
+		for(RigidBody & object : objects)
+		{
+			// Simulate gravity.
 			if(gravityEnabled)
 				object.velocity += gravitationalForce;
 
-			// Then, simulate friction
+			// Simulate friction.
+
+			// If gravity is enabled...
 			if(gravityEnabled)
-				// If gravity is enabled, just simulate horizontal friction
-				object.velocity.x *= CoefficientOfFriction;
+				// Simulate only horizontal friction.
+				object.velocity.x *= coefficientOfFriction;
+			// If gravity isn't enabled...
 			else
-				// If gravity isn't enabled, simulate top-down friction
-				object.velocity *= CoefficientOfFriction;
+				// Simulate full friction.
+				object.velocity *= coefficientOfFriction;
 
-			// Then, keep the objects onscreen
-			// (A sort of cheaty way of keeping the objects onscreen)
-			
-			// They're literally bouncing off the walls :P
-			if(object.position.x < 0)
+			// Keep the objects on screen by bouncing them off the walls.
+
+			// If the object has gone off the left side of the screen...
+			if(object.position.x < screenLeft)
 			{
-				object.position.x = 0;
-				object.velocity.x = -object.velocity.x;			
+				// Move the object to the left hand side of the screen.
+				object.position.x = screenLeft;
+
+				// Reverse the object's horizontal velocity.
+				object.velocity.x = -object.velocity.x;
 			}
 
-			if(object.position.x > arduboy.width() - 8)
+			// If the object has gone off the right side of the screen...
+			if(object.position.x > screenRight)
 			{
-				object.position.x = (arduboy.width() - 8);
-				object.velocity.x = -object.velocity.x;	
+				// Move the object to the right hand side of the screen.
+				object.position.x = screenRight;
+
+				// Reverse the object's horizontal velocity.
+				object.velocity.x = -object.velocity.x;
 			}
-					
+
+			// If gravity is enabled...
 			if(gravityEnabled)
 			{
-				// If gravity is enabled, gradually have the object come to a halt
-				// This would be easier to understand with a diagram
-				if(object.position.y < 0)
+				// If the object has gone off the top side of the screen...
+				if(object.position.y < screenTop)
 				{
-					object.position.y = 0;
-					
-					if(object.velocity.y > RestitutionThreshold)
-						object.velocity.y = -object.velocity.y * CoefficientOfRestitution;
+					// Move the object to the top side of the screen.
+					object.position.y = screenTop;
+
+					// If the object is moving faster (vertically) than the restitution threshold...
+					if(object.velocity.y > restitutionThreshold)
+					{
+						// Reverse the object's vertical velocity.
+						object.velocity.y = -object.velocity.y;
+
+						// Reduce the object's velocity by the coefficient of restitution.
+						object.velocity.y *= coefficientOfRestitution;
+					}
+					// If the object is moving slower (vertically) than the restitution threshold...
 					else
+					{
+						// Set the object's vertical velocity to zero.
+						// I.e. bring it to a vertical halt.
 						object.velocity.y = 0;
-				}
-				if(object.position.y > arduboy.height() - 8)
-				{
-					object.position.y = (arduboy.height() - 8);
-					
-					if(object.velocity.y > RestitutionThreshold)
-						object.velocity.y = -object.velocity.y * CoefficientOfRestitution;
-					else
-						object.velocity.y = 0;
-				}
-			}			
-			else
-			{
-				// If gravity isn't enabled, bounce off the y sides as well
-				if(object.position.y < 0)
-				{
-					object.position.y = 0;
-					object.velocity.y = -object.velocity.y;			
+					}
 				}
 
-				if(object.position.y > arduboy.height() - 8)
+				// If the object has gone off the bottom side of the screen...
+				if(object.position.y > screenBottom)
 				{
-					object.position.y = (arduboy.height() - 8);
-					object.velocity.y = -object.velocity.y;	
+					// Move the object to the bottom side of the screen.
+					object.position.y = screenBottom;
+
+					// If the object is moving faster (vertically) than the restitution threshold...
+					if(object.velocity.y > restitutionThreshold)
+					{
+						// Reverse the object's vertical velocity.
+						object.velocity.y = -object.velocity.y;
+
+						// Reduce the object's velocity by the coefficient of restitution.
+						object.velocity.y *= coefficientOfRestitution;
+					}
+					// If the object is moving slower (vertically) than the restitution threshold...
+					else
+					{
+						// Set the object's vertical velocity to zero.
+						// I.e. bring it to a vertical halt.
+						object.velocity.y = 0;
+					}
 				}
 			}
-			
-			// Finally, update position using velocity
+			// If gravity isn't enabled...
+			else
+			{
+				// If the object has gone off the top side of the screen...
+				if(object.position.y < screenTop)
+				{
+					// Move the object to the top side of the screen.
+					object.position.y = screenTop;
+
+					// Reverse the object's vertical velocity.
+					object.velocity.y = -object.velocity.y;
+				}
+
+				// If the object has gone off the bottom side of the screen...
+				if(object.position.y > screenBottom)
+				{
+					// Move the object to the bottom side of the screen.
+					object.position.y = screenBottom;
+
+					// Reverse the object's vertical velocity.
+					object.velocity.y = -object.velocity.y;
+				}
+			}
+
+			// Finally, the object's update position using the object's velocity.
 			object.position += object.velocity;
 		}
 	}
