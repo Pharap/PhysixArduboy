@@ -236,7 +236,7 @@ public:
 
 			// If A is pressed...
 			if(arduboy.justPressed(A_BUTTON))
-				// Perform an 'emergency stop' by zeroing all velocity.
+				// Perform an 'emergency stop' by zeroing the velocity.
 				playerObject.velocity = Vector2(0, 0);
 		}
 	}
@@ -244,6 +244,12 @@ public:
 	/// Simulates the physics.
 	void simulatePhysics()
 	{
+		// Precalculate the boundaries for the sides of the screen.
+		constexpr int16_t screenLeft = 0;
+		constexpr int16_t screenRight = (Arduboy2::width() - 8);
+		constexpr int16_t screenTop = 0;
+		constexpr int16_t screenBottom = (Arduboy2::height() - 8);
+
 		// For each object in objects...
 		for(RigidBody & object : objects)
 		{
@@ -265,20 +271,20 @@ public:
 			// Keep the objects on screen by bouncing them off the walls.
 
 			// If the object has gone off the left side of the screen...
-			if(object.position.x < 0)
+			if(object.position.x < screenLeft)
 			{
 				// Move the object to the left hand side of the screen.
-				object.position.x = 0;
+				object.position.x = screenLeft;
 
 				// Reverse the object's horizontal velocity.
 				object.velocity.x = -object.velocity.x;
 			}
 
 			// If the object has gone off the right side of the screen...
-			if(object.position.x > arduboy.width() - 8)
+			if(object.position.x > screenRight)
 			{
 				// Move the object to the right hand side of the screen.
-				object.position.x = (arduboy.width() - 8);
+				object.position.x = screenRight;
 
 				// Reverse the object's horizontal velocity.
 				object.velocity.x = -object.velocity.x;
@@ -288,10 +294,10 @@ public:
 			if(gravityEnabled)
 			{
 				// If the object has gone off the top side of the screen...
-				if(object.position.y < 0)
+				if(object.position.y < screenTop)
 				{
 					// Move the object to the top side of the screen.
-					object.position.y = 0;
+					object.position.y = screenTop;
 
 					// If the object is moving faster (vertically) than the restitution threshold...
 					if(object.velocity.y > restitutionThreshold)
@@ -312,10 +318,10 @@ public:
 				}
 
 				// If the object has gone off the bottom side of the screen...
-				if(object.position.y > arduboy.height() - 8)
+				if(object.position.y > screenBottom)
 				{
 					// Move the object to the bottom side of the screen.
-					object.position.y = (arduboy.height() - 8);
+					object.position.y = screenBottom;
 
 					// If the object is moving faster (vertically) than the restitution threshold...
 					if(object.velocity.y > restitutionThreshold)
@@ -339,20 +345,20 @@ public:
 			else
 			{
 				// If the object has gone off the top side of the screen...
-				if(object.position.y < 0)
+				if(object.position.y < screenTop)
 				{
 					// Move the object to the top side of the screen.
-					object.position.y = 0;
+					object.position.y = screenTop;
 
 					// Reverse the object's vertical velocity.
 					object.velocity.y = -object.velocity.y;
 				}
 
 				// If the object has gone off the bottom side of the screen...
-				if(object.position.y > arduboy.height() - 8)
+				if(object.position.y > screenBottom)
 				{
 					// Move the object to the bottom side of the screen.
-					object.position.y = (arduboy.height() - 8);
+					object.position.y = screenBottom;
 
 					// Reverse the object's vertical velocity.
 					object.velocity.y = -object.velocity.y;
