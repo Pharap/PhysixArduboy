@@ -86,6 +86,7 @@ public:
 	Vector2 & operator /=(Number factor)
 	{
 		const auto inverseFactor = (1 / factor);
+
 		this->x *= inverseFactor;
 		this->y *= inverseFactor;
 		return *this;

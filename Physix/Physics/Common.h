@@ -35,7 +35,7 @@ constexpr inline Number fromUnsigned(NumberU value)
 template< typename T >
 constexpr auto square(T value) -> decltype(value * value)
 {
-	return value * value;
+	return (value * value);
 }
 
 template< typename T, size_t size >

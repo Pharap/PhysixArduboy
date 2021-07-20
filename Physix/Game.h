@@ -45,7 +45,7 @@ public:
 	static constexpr Number inputForce = 0.25;
 
 private:
-	Arduboy2 arduboy = Arduboy2();
+	Arduboy2 arduboy;
 
 	RigidBody objects[8];
 
@@ -54,12 +54,11 @@ private:
 	RigidBody & playerObject = objects[0];
 
 	bool gravityEnabled = false;
-	Vector2 gravitationalForce = Vector2(0, coefficientOfGravity);
+	Vector2 gravitationalForce { 0, coefficientOfGravity };
 
 	bool statRenderingEnabled = true;
 
 public:
-
 	void randomiseObjects()
 	{
 		for(uint8_t i = 0; i < arrayLength(objects); ++i)
@@ -67,12 +66,28 @@ public:
 			RigidBody & object = objects[i];
 
 			object.position = Point2(Number(random(arduboy.width())), Number(random(arduboy.height())));
+
+			// If gravity is enabled, only affect y
 			if(gravityEnabled)
-				// If gravity enabled, only affect y
-				object.velocity.y += Number(random(-8, 8), random(1 << Number::FractionSize));
+			{
+				const auto integer = random(-8, 8);
+				const auto fraction = random(1 << Number::FractionSize);
+
+				object.velocity.y += Number(integer, fraction);
+			}
+			// If gravity not enabled, affect both dimensions
 			else
-				// If gravity not enabled, affect both
-				object.velocity += Vector2(Number(random(-8, 8), random(1 << Number::FractionSize)), Number(random(-8, 8), random(1 << Number::FractionSize)));
+			{
+				const auto xInteger = random(-8, 8);
+				const auto xFraction = random(1 << Number::FractionSize);
+				const auto xOffset = Number(xInteger, xFraction);
+
+				const auto yInteger = random(-8, 8);
+				const auto yFraction = random(1 << Number::FractionSize);
+				const auto yOffset = Number(yInteger, yFraction);
+
+				object.velocity += Vector2(xOffset, yOffset);
+			}
 		}
 	}
 
@@ -82,7 +97,9 @@ public:
 
 		randomiseObjects();
 
-		playerObject.position = Point2(Number(arduboy.width() / 2), Number(arduboy.height() / 2));
+		constexpr auto centreScreen = Point2(Number(arduboy.width() / 2), Number(arduboy.height() / 2));
+
+		playerObject.position = centreScreen;
 		playerObject.velocity = Vector2(0, 0);
 	}
 
@@ -108,10 +125,11 @@ public:
 
 	void renderObjects()
 	{
-		for(uint8_t i = 0; i < arrayLength(objects); ++i)
+		for(uint8_t index = 0; index < arrayLength(objects); ++index)
 		{
-			RigidBody & object = objects[i];
-			if(i > 0)
+			RigidBody & object = objects[index];
+
+			if(index > 0)
 				arduboy.fillRect(static_cast<int8_t>(object.getX()), static_cast<int8_t>(object.getY()), 8, 8);
 			else
 				arduboy.drawRect(static_cast<int8_t>(object.getX()), static_cast<int8_t>(object.getY()), 8, 8);
@@ -134,7 +152,6 @@ public:
 
 	void updateInput()
 	{
-
 		// Input tools for playing around
 		if(arduboy.pressed(B_BUTTON))
 		{
@@ -183,12 +200,11 @@ public:
 
 	void simulatePhysics()
 	{
-
 		// Update objects
-		for(uint8_t i = 0; i < arrayLength(objects); ++i)
+		for(uint8_t index = 0; index < arrayLength(objects); ++index)
 		{
 			// object refers to the given item in the array
-			RigidBody & object = objects[i];
+			RigidBody & object = objects[index];
 
 			// First, simulate gravity
 			if(gravityEnabled)
@@ -218,10 +234,10 @@ public:
 				object.velocity.x = -object.velocity.x;
 			}
 
+			// If gravity is enabled, gradually have the object come to a halt
+			// This would be easier to understand with a diagram
 			if(gravityEnabled)
 			{
-				// If gravity is enabled, gradually have the object come to a halt
-				// This would be easier to understand with a diagram
 				if(object.position.y < 0)
 				{
 					object.position.y = 0;
@@ -241,9 +257,9 @@ public:
 						object.velocity.y = 0;
 				}
 			}
+			// If gravity isn't enabled, bounce off the y sides as well
 			else
 			{
-				// If gravity isn't enabled, bounce off the y sides as well
 				if(object.position.y < 0)
 				{
 					object.position.y = 0;
